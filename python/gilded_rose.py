@@ -9,54 +9,34 @@ class GildedRose(object):
         for item in self.items:
             match item.name:
                 case "Aged Brie":
-                    if item.quality < 50:
-                        item.quality += 1
+                    # Increase quality until it reaches 50
+                    item.quality = min(item.quality + 1, 50)
                 case "Sulfuras, Hand of Ragnaros":
+                    # Legendary item - no modifications
                     continue
-                case item.name if "Backstage passes" in item.name:
+                case item.name if item.name.startswith("Backstage passes"):
+                    # Increase the quality depending on the number of days left.
+                    # When the concert stops(no days left), quality becomes 0
                     if item.sell_in > 0:
-                        item.quality += 3
+                        if item.sell_in <= 5:
+                            item.quality += 3
+                        elif item.sell_in <= 10:
+                            item.quality += 2
+                        else:
+                            item.quality += 1
                     else:
-                        item.quality += 2
-                case item.name if "Conjured" in item.name:
-                    if item.sell_in > 0:
-                        item.quality = max(0, item.sell_in - 2)
-                    else:
-                        item.quality = max(0, item.sell_in - 4)
+                        item.quality = 0
                 case _:
+                    power_increase = 1
+                    # Conjured items take twice as much damage as an ordinary item
+                    if item.name.startswith("Conjured"):
+                        power_increase += 1
                     if item.sell_in > 0:
-                        item.quality = max(0, item.sell_in - 1)
+                        item.quality = max(0, item.quality - 1 * power_increase)
                     else:
-                        item.quality = max(0, item.sell_in - 2)
+                        item.quality = max(0, item.quality - 2 * power_increase)
+            # Decrease the number of days left
             item.sell_in -= 1
-
-            # if item.name != "Aged Brie" and item.name != "Backstage passes to a TAFKAL80ETC concert":
-            #     if item.quality > 0:
-            #         if item.name != "Sulfuras, Hand of Ragnaros":
-            #             item.quality = item.quality - 1
-            # else:
-            #     if item.quality < 50:
-            #         item.quality = item.quality + 1
-            #         if item.name == "Backstage passes to a TAFKAL80ETC concert":
-            #             if item.sell_in < 11:
-            #                 if item.quality < 50:
-            #                     item.quality = item.quality + 1
-            #             if item.sell_in < 6:
-            #                 if item.quality < 50:
-            #                     item.quality = item.quality + 1
-            # if item.name != "Sulfuras, Hand of Ragnaros":
-            #     item.sell_in = item.sell_in - 1
-            # if item.sell_in < 0:
-            #     if item.name != "Aged Brie":
-            #         if item.name != "Backstage passes to a TAFKAL80ETC concert":
-            #             if item.quality > 0:
-            #                 if item.name != "Sulfuras, Hand of Ragnaros":
-            #                     item.quality = item.quality - 1
-            #         else:
-            #             item.quality = item.quality - item.quality
-            #     else:
-            #         if item.quality < 50:
-            #             item.quality = item.quality + 1
 
 
 class Item:

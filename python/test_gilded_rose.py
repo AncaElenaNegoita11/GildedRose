@@ -27,6 +27,12 @@ class GildedRoseTest(unittest.TestCase):
         self.assertEqual(11, items[0].quality)
         self.assertEqual(21, items[1].quality)
 
+        for i in range(0, 31):
+            aged_brie.update_quality()
+
+        self.assertEqual(42, items[0].quality)
+        self.assertEqual(50, items[1].quality)
+
     def test_sulfuras_sell_in(self):
         items = [Item("Sulfuras, Hand of Ragnaros", 10, 80),
                  Item("Sulfuras, Hand of Ragnaros", 0, 80)]
@@ -40,6 +46,12 @@ class GildedRoseTest(unittest.TestCase):
                  Item("Sulfuras, Hand of Ragnaros", 0, 80)]
         sulfuras = GildedRose(items)
         sulfuras.update_quality()
+        self.assertEqual(80, items[0].quality)
+        self.assertEqual(80, items[1].quality)
+
+        for i in range(0, 4):
+            sulfuras.update_quality()
+
         self.assertEqual(80, items[0].quality)
         self.assertEqual(80, items[1].quality)
 
@@ -59,21 +71,33 @@ class GildedRoseTest(unittest.TestCase):
         self.assertEqual(5, items[0].quality)
         self.assertEqual(32, items[1].quality)
 
+        for i in range(0, 4):
+            backstage.update_quality()
+
+        self.assertEqual(0, items[0].quality)
+        self.assertEqual(43, items[1].quality)
+
     def test_conjured_sell_in(self):
         items = [Item("Conjured Morgana", 4, 2),
                  Item("Conjured Ragnaros", 12, 25)]
-        backstage = GildedRose(items)
-        backstage.update_quality()
+        conjured = GildedRose(items)
+        conjured.update_quality()
         self.assertEqual(3, items[0].sell_in)
         self.assertEqual(11, items[1].sell_in)
 
     def test_conjured_quality(self):
         items = [Item("Conjured Morgana", 4, 2),
-                 Item("Conjured Ragnaros", 12, 25)]
-        backstage = GildedRose(items)
-        backstage.update_quality()
+                 Item("Conjured Ragnaros", 12, 35)]
+        conjured = GildedRose(items)
+        conjured.update_quality()
         self.assertEqual(0, items[0].quality)
-        self.assertEqual(23, items[1].quality)
+        self.assertEqual(33, items[1].quality)
+
+        for i in range(0, 12):
+            conjured.update_quality()
+
+        self.assertEqual(0, items[0].quality)
+        self.assertEqual(7, items[1].quality)
 
 
 if __name__ == '__main__':
