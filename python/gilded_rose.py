@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import random
+
 
 class GildedRose(object):
 
@@ -35,8 +37,30 @@ class GildedRose(object):
         else:
             item.quality = max(0, item.quality - 2 * power_increase)
 
+    def probability_fake(self, chance):
+        return random.random() < chance
+
+    def fibonacci(self, number):
+        if number == 0 or number == 1:
+            return number
+        return self.fibonacci(number - 1) + self.fibonacci(number - 2)
+
+    def verify_fake_item(self, item):
+        if not item.fake and self.probability_fake(0.33):
+            item.fake = True
+            item.fake_days_fibo = 0
+
+    def modify_fake_item(self, item):
+        if item.fake:
+            if item.sell_in > 0:
+                item.quality = max(0, item.quality - self.fibonacci(item.fake_days_fibo))
+            item.fake_days_fibo += 1
+
     def update_quality(self):
         for item in self.items:
+            if not item.sell_in % 2:
+                self.verify_fake_item(item)
+            self.modify_fake_item(item)
             match item.name:
                 case "Aged Brie":
                     self.aged_brie(item)
@@ -53,10 +77,12 @@ class GildedRose(object):
 
 
 class Item:
-    def __init__(self, name, sell_in, quality):
+    def __init__(self, name, sell_in, quality, fake, fake_days_fibo):
         self.name = name
         self.sell_in = sell_in
         self.quality = quality
+        self.fake = fake
+        self.fake_days_fibo = fake_days_fibo
 
     def __repr__(self):
         return "%s, %s, %s" % (self.name, self.sell_in, self.quality)
